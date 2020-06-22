@@ -1,0 +1,22 @@
+news_sites:
+  mercadolibre:
+    url: https://autos.mercadolibre.com.uy/_FUEL*TYPE_60406_NoIndex_True
+    queries:
+      homepage_article_links: '.results-item a'
+      article_body: '.item-description__text'
+      article_title: '.item-title h1'
+      article_price: '.price-tag-fraction'
+      localidad: '.location-info'
+      fichatecnica: '.specs-list'
+  elpais:
+    url: https://www.elpais.com/
+    queries:
+      homepage_article_links: '.headline a'
+      article_body: ''
+      article_title: ''
+  hackernews:
+    url: 'https://news.ycombinator.com/newest'
+    queries:
+      homepage_article_links: '.storylink'
+      article_body: ''
+      article_title: ''
