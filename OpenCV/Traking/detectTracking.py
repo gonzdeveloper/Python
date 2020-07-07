@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-captura = cv2.VideoCapture('video.mp4')
+captura = cv2.VideoCapture('videocorto.mov')
 
 # 0 especifica la camara que se va a usar
 # HSV
@@ -12,11 +12,42 @@ azulAlto = np.array([105,200,220], np.uint8)
 # pelotaAlto = np.array([1,220,220], np.uint8)
 
 
+# Traking de mouse
+tracker = cv2.TrackerMOSSE_create()
+success, frame = captura.read()
+bbox = cv2.selectROI("frame", frame, False)
+tracker.init(frame, bbox)
+# Traking de mouse
+
+
+def drawBox(img,bbox):
+    x, y, w, h = int(bbox[0]), int(bbox[1]), int(bbox[2]), int(bbox[3])
+    cv2.rectangle(img, (x, y), ((x + w), (y + h)), (255, 0, 255), 3, 3 )
+    cv2.putText(img, "Tracking", (100, 75), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+
+
 while True:
     ret,frame = captura.read()
     cv2.namedWindow("frame", 0)
     cv2.resizeWindow("frame", 1024,720)
     cv2.moveWindow("frame", 30, 30)
+
+
+# Traking de mouse
+    timer = cv2.getTickCount()
+    success, frame = captura.read()
+
+    success, bbox = tracker.update(frame)
+
+    if success:
+        drawBox(frame,bbox)
+    else:
+        cv2.putText(frame, "Lost", (75,50), cv2.FONT_HERSHEY_COMPLEX, 0.7, (0,0,255), 2)
+
+
+    fps = cv2.getTickFrequency() / (cv2.getTickCount()-timer)
+    cv2.putText(frame, str(int(fps)), (75,50), cv2.FONT_HERSHEY_COMPLEX, 0.7, (0,0,255), 2)
+# Traking de mouse
 
     # gris = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     # bordes = cv2.Canny(gris, 255, 255)
@@ -56,7 +87,9 @@ while True:
                 # cv2.circle(frame, (x,y), 7, (0,255,0), -1)
                 # cv2.rectangle(frame, (x,y), (x+w, y+h), (255,0,0), 3)
                 font = cv2.FONT_HERSHEY_SIMPLEX
-                cv2.putText(frame, '{},{}'.format(x,y), (x+10, y), font, 0.75, (255,0, 0), 1, cv2.LINE_AA)
+                
+                # cv2.putText(frame, '{},{}'.format(x,y), (x+10, y), font, 0.75, (255,0, 0), 1, cv2.LINE_AA)
+                
                 # suavizo los contornos
                 # nuevoContornoSuavizado = cv2.convexHull(c)
 
@@ -65,7 +98,7 @@ while True:
 
                 # nuevoContornoSuavizado = cv2.convexHull(approx)
 
-                cv2.drawContours(frame, [approx], 0, (255,0,0), 3)
+                # cv2.drawContours(frame, [approx], 0, (255,0,0), 3)
         
 
 
@@ -82,7 +115,7 @@ while True:
         
         # cv2.imshow('frame', frame)
 
-        if cv2.waitKey(1) & 0xFF == ord('s'):
+        if cv2.waitKey(30) & 0xFF == ord('s'):
             # ord es la tecla para salir
             break
     else: break
